@@ -1,0 +1,642 @@
+local P=game:GetService("Players")
+local UIS=game:GetService("UserInputService")
+local RS=game:GetService("RunService")
+local LP=P.LocalPlayer
+local PG=LP:WaitForChild("PlayerGui")
+
+local old=PG:FindFirstChild("Pepsihub")
+if old then old:Destroy() end
+
+local GUI=Instance.new("ScreenGui")
+GUI.Name="Pepsihub"
+GUI.ResetOnSpawn=false
+GUI.Parent=PG
+
+local Main=Instance.new("Frame")
+Main.Size=UDim2.fromOffset(520,350)
+Main.Position=UDim2.new(.5,-260,.5,-175)
+Main.BackgroundColor3=Color3.fromRGB(20,20,25)
+Main.BorderSizePixel=0
+Main.Parent=GUI
+Instance.new("UICorner",Main).CornerRadius=UDim.new(0,12)
+
+local Top=Instance.new("Frame")
+Top.Size=UDim2.new(1,0,0,55)
+Top.BackgroundColor3=Color3.fromRGB(28,28,35)
+Top.BorderSizePixel=0
+Top.Parent=Main
+
+local Title=Instance.new("TextLabel")
+Title.Size=UDim2.new(1,-120,0,30)
+Title.Position=UDim2.fromOffset(15,6)
+Title.BackgroundTransparency=1
+Title.Text="Pepsihub"
+Title.TextColor3=Color3.new(1,1,1)
+Title.TextSize=20
+Title.Font=Enum.Font.GothamBold
+Title.TextXAlignment=Enum.TextXAlignment.Left
+Title.Parent=Top
+
+local Mini=Instance.new("TextButton")
+Mini.Size=UDim2.fromOffset(38,30)
+Mini.Position=UDim2.new(1,-82,0,12)
+Mini.Text="—"
+Mini.TextSize=18
+Mini.TextColor3=Color3.new(1,1,1)
+Mini.BackgroundColor3=Color3.fromRGB(45,45,55)
+Mini.Parent=Top
+Instance.new("UICorner",Mini).CornerRadius=UDim.new(0,7)
+
+local Close=Instance.new("TextButton")
+Close.Size=UDim2.fromOffset(38,30)
+Close.Position=UDim2.new(1,-42,0,12)
+Close.Text="×"
+Close.TextSize=20
+Close.TextColor3=Color3.new(1,1,1)
+Close.BackgroundColor3=Color3.fromRGB(170,45,55)
+Close.Parent=Top
+Instance.new("UICorner",Close).CornerRadius=UDim.new(0,7)
+
+local Side=Instance.new("Frame")
+Side.Size=UDim2.new(0,135,1,-55)
+Side.Position=UDim2.fromOffset(0,55)
+Side.BackgroundColor3=Color3.fromRGB(25,25,31)
+Side.BorderSizePixel=0
+Side.Parent=Main
+
+local Content=Instance.new("Frame")
+Content.Size=UDim2.new(1,-135,1,-55)
+Content.Position=UDim2.fromOffset(135,55)
+Content.BackgroundTransparency=1
+Content.Parent=Main
+
+local Pages={}
+local Buttons={}
+local Indicators={}
+
+local function Page(n)
+	local f=Instance.new("ScrollingFrame")
+	f.Name=n
+	f.Size=UDim2.new(1,-20,1,-20)
+	f.Position=UDim2.fromOffset(10,10)
+	f.BackgroundTransparency=1
+	f.BorderSizePixel=0
+	f.ScrollBarThickness=3
+	f.AutomaticCanvasSize=Enum.AutomaticSize.Y
+	f.Visible=false
+	f.Parent=Content
+	Pages[n]=f
+	return f
+end
+
+local Home=Page("Home")
+local Player=Page("Player")
+local Visual=Page("Visual")
+local Settings=Page("Settings")
+
+local function Tab(n,i)
+	local b=Instance.new("TextButton")
+	b.Size=UDim2.new(1,-16,0,42)
+	b.Position=UDim2.fromOffset(8,8+(i-1)*48)
+	b.BackgroundColor3=Color3.fromRGB(25,25,31)
+	b.Text=n
+	b.TextColor3=Color3.fromRGB(180,180,190)
+	b.TextSize=13
+	b.Font=Enum.Font.GothamMedium
+	b.AutoButtonColor=false
+	b.Parent=Side
+	Buttons[n]=b
+
+	local ind=Instance.new("Frame")
+	ind.Size=UDim2.fromOffset(3,28)
+	ind.Position=UDim2.fromOffset(0,7)
+	ind.BackgroundColor3=Color3.new(1,1,1)
+	ind.Visible=false
+	ind.Parent=b
+	Indicators[n]=ind
+end
+
+local function Label(p,t,y,h)
+	local x=Instance.new("TextLabel")
+	x.Size=UDim2.new(1,-20,0,h or 30)
+	x.Position=UDim2.fromOffset(10,y)
+	x.BackgroundTransparency=1
+	x.Text=t
+	x.TextColor3=Color3.fromRGB(235,235,240)
+	x.TextSize=14
+	x.Font=Enum.Font.GothamMedium
+	x.TextXAlignment=Enum.TextXAlignment.Left
+	x.Parent=p
+	return x
+end
+
+local function Card(p,y,h)
+	local x=Instance.new("Frame")
+	x.Size=UDim2.new(1,-20,0,h or 50)
+	x.Position=UDim2.fromOffset(10,y)
+	x.BackgroundColor3=Color3.fromRGB(30,30,38)
+	x.BorderSizePixel=0
+	x.Parent=p
+	Instance.new("UICorner",x).CornerRadius=UDim.new(0,8)
+	return x
+end
+
+local function Toggle(p,t,y,cb)
+	local c=Card(p,y,48)
+
+	local l=Instance.new("TextLabel")
+	l.Size=UDim2.new(1,-75,1,0)
+	l.Position=UDim2.fromOffset(14,0)
+	l.BackgroundTransparency=1
+	l.Text=t
+	l.TextColor3=Color3.fromRGB(235,235,240)
+	l.TextSize=13
+	l.Font=Enum.Font.Gotham
+	l.TextXAlignment=Enum.TextXAlignment.Left
+	l.Parent=c
+
+	local b=Instance.new("TextButton")
+	b.Size=UDim2.fromOffset(48,25)
+	b.Position=UDim2.new(1,-60,.5,-12)
+	b.Text="OFF"
+	b.TextSize=10
+	b.TextColor3=Color3.new(1,1,1)
+	b.BackgroundColor3=Color3.fromRGB(65,65,75)
+	b.Parent=c
+	Instance.new("UICorner",b).CornerRadius=UDim.new(1,0)
+
+	local on=false
+
+	local function Set(v)
+		on=v
+		b.Text=v and "ON" or "OFF"
+		b.BackgroundColor3=v and Color3.fromRGB(70,170,100) or Color3.fromRGB(65,65,75)
+		if cb then cb(v) end
+	end
+
+	b.Activated:Connect(function()
+		Set(not on)
+	end)
+
+	return Set
+end
+
+Tab("Home",1)
+Tab("Player",2)
+Tab("Visual",3)
+Tab("Settings",4)
+
+Label(Home,"Welcome to Pepsihub",10,35)
+Label(Home,"LocalScript Hub",48,25)
+
+local Speed=32
+local SpeedOn=false
+local JumpOn=false
+local NoclipOn=false
+local FlyOn=false
+local InfiniteOn=false
+
+local JumpConn,NoClipConn
+local CollisionCache={}
+
+local function Hum()
+	local c=LP.Character
+	return c and c:FindFirstChildOfClass("Humanoid")
+end
+
+Toggle(Player,"WalkSpeed",10,function(v)
+	SpeedOn=v
+	local h=Hum()
+	if h then h.WalkSpeed=v and Speed or 16 end
+end)
+
+local SL=Label(Player,"WalkSpeed: "..Speed,68,24)
+
+local Bar=Instance.new("Frame")
+Bar.Size=UDim2.new(1,-20,0,7)
+Bar.Position=UDim2.fromOffset(10,94)
+Bar.BackgroundColor3=Color3.fromRGB(55,55,65)
+Bar.Parent=Player
+Instance.new("UICorner",Bar).CornerRadius=UDim.new(1,0)
+
+local Fill=Instance.new("Frame")
+Fill.Size=UDim2.new((Speed-16)/84,0,1,0)
+Fill.BackgroundColor3=Color3.fromRGB(100,180,120)
+Fill.Parent=Bar
+Instance.new("UICorner",Fill).CornerRadius=UDim.new(1,0)
+
+local Drag=false
+
+local function Slide(x)
+	local a=math.clamp((x-Bar.AbsolutePosition.X)/Bar.AbsoluteSize.X,0,1)
+	Speed=math.floor(16+a*84+.5)
+	SL.Text="WalkSpeed: "..Speed
+	Fill.Size=UDim2.new(a,0,1,0)
+
+	if SpeedOn then
+		local h=Hum()
+		if h then h.WalkSpeed=Speed end
+	end
+end
+
+Bar.InputBegan:Connect(function(i)
+	if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+		Drag=true
+		Slide(i.Position.X)
+	end
+end)
+
+UIS.InputChanged:Connect(function(i)
+	if Drag and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then
+		Slide(i.Position.X)
+	end
+end)
+
+UIS.InputEnded:Connect(function(i)
+	if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+		Drag=false
+	end
+end)
+
+Toggle(Player,"JumpPower",112,function(v)
+	JumpOn=v
+	local h=Hum()
+	if h then
+		h.UseJumpPower=true
+		h.JumpPower=v and 70 or 50
+	end
+end)
+
+Toggle(Player,"Infinite Jump",166,function(v)
+	InfiniteOn=v
+
+	if JumpConn then
+		JumpConn:Disconnect()
+		JumpConn=nil
+	end
+
+	if v then
+		JumpConn=UIS.JumpRequest:Connect(function()
+			local h=Hum()
+			if h then
+				h:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
+		end)
+	end
+end)
+
+local function SaveCollision()
+	CollisionCache={}
+
+	local c=LP.Character
+	if not c then return end
+
+	for _,p in ipairs(c:GetDescendants()) do
+		if p:IsA("BasePart") then
+			CollisionCache[p]=p.CanCollide
+		end
+	end
+end
+
+local function RestoreCollision()
+	for p,v in pairs(CollisionCache) do
+		if p and p.Parent then
+			p.CanCollide=v
+		end
+	end
+
+	CollisionCache={}
+end
+
+local function StartNoClip()
+	if NoClipConn then
+		NoClipConn:Disconnect()
+	end
+
+	SaveCollision()
+
+	NoClipConn=RS.Stepped:Connect(function()
+		local c=LP.Character
+		if not c then return end
+
+		for _,p in ipairs(c:GetDescendants()) do
+			if p:IsA("BasePart") then
+				if CollisionCache[p]==nil then
+					CollisionCache[p]=p.CanCollide
+				end
+				p.CanCollide=false
+			end
+		end
+	end)
+end
+
+local function StopNoClip()
+	if NoClipConn then
+		NoClipConn:Disconnect()
+		NoClipConn=nil
+	end
+
+	RestoreCollision()
+end
+
+Toggle(Player,"NoClip",220,function(v)
+	NoclipOn=v
+
+	if v then
+		StartNoClip()
+	else
+		StopNoClip()
+	end
+end)
+
+Toggle(Player,"Fly",274,function(v)
+	FlyOn=v
+
+	if v then
+		loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Fly-gui-v3-78856"))()
+	end
+end)
+
+local ESPOn=false
+local NamesOn=false
+local ESP={}
+local Names={}
+
+local function AddESP(plr)
+	if plr==LP or not plr.Character then return end
+
+	if ESP[plr] then
+		ESP[plr]:Destroy()
+	end
+
+	local h=Instance.new("Highlight")
+	h.Name="PepsiESP"
+	h.FillTransparency=.65
+	h.OutlineTransparency=0
+	h.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+	h.Parent=plr.Character
+	ESP[plr]=h
+end
+
+local function RemoveESP(plr)
+	if ESP[plr] then
+		ESP[plr]:Destroy()
+		ESP[plr]=nil
+	end
+end
+
+local function AddName(plr)
+	if plr==LP or not plr.Character then return end
+
+	if Names[plr] then
+		Names[plr]:Destroy()
+	end
+
+	local head=plr.Character:FindFirstChild("Head")
+	if not head then return end
+
+	local b=Instance.new("BillboardGui")
+	b.Name="PepsiName"
+	b.Size=UDim2.fromOffset(150,30)
+	b.StudsOffset=Vector3.new(0,2.5,0)
+	b.AlwaysOnTop=true
+	b.Parent=head
+
+	local t=Instance.new("TextLabel")
+	t.Size=UDim2.fromScale(1,1)
+	t.BackgroundTransparency=1
+	t.Text=plr.DisplayName
+	t.TextColor3=Color3.new(1,1,1)
+	t.TextStrokeTransparency=.3
+	t.TextSize=13
+	t.Font=Enum.Font.GothamBold
+	t.Parent=b
+
+	Names[plr]=b
+end
+
+local function RemoveName(plr)
+	if Names[plr] then
+		Names[plr]:Destroy()
+		Names[plr]=nil
+	end
+end
+
+Toggle(Visual,"ESP Player",10,function(v)
+	ESPOn=v
+
+	for _,p in ipairs(P:GetPlayers()) do
+		if p~=LP then
+			if v then
+				AddESP(p)
+			else
+				RemoveESP(p)
+			end
+		end
+	end
+end)
+
+Toggle(Visual,"Player Names",64,function(v)
+	NamesOn=v
+
+	for _,p in ipairs(P:GetPlayers()) do
+		if p~=LP then
+			if v then
+				AddName(p)
+			else
+				RemoveName(p)
+			end
+		end
+	end
+end)
+
+local NPCESPOn=false
+local NPCESP={}
+
+local function IsNPC(m)
+	return m:IsA("Model")
+		and m:FindFirstChildOfClass("Humanoid")
+		and not P:GetPlayerFromCharacter(m)
+end
+
+local function AddNPC(m)
+	if not NPCESPOn or not IsNPC(m) then return end
+	if NPCESP[m] then return end
+
+	local h=Instance.new("Highlight")
+	h.Name="PepsiNPCESP"
+	h.FillTransparency=.65
+	h.OutlineTransparency=0
+	h.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+	h.Parent=m
+	NPCESP[m]=h
+end
+
+local function ClearNPC()
+	for m,h in pairs(NPCESP) do
+		if h then h:Destroy() end
+		NPCESP[m]=nil
+	end
+end
+
+Toggle(Visual,"ESP NPC / Dummy",118,function(v)
+	NPCESPOn=v
+	ClearNPC()
+
+	if v then
+		for _,m in ipairs(workspace:GetDescendants()) do
+			AddNPC(m)
+		end
+	end
+end)
+
+workspace.DescendantAdded:Connect(function(m)
+	if NPCESPOn then
+		task.defer(function()
+			if m and m.Parent then
+				AddNPC(m)
+			end
+		end)
+	end
+end)
+
+workspace.DescendantRemoving:Connect(function(m)
+	if NPCESP[m] then
+		NPCESP[m]=nil
+	end
+end)
+
+local function Show(n)
+	for k,p in pairs(Pages) do
+		p.Visible=(k==n)
+	end
+
+	for k,b in pairs(Buttons) do
+		b.BackgroundColor3=k==n and Color3.fromRGB(40,40,50) or Color3.fromRGB(25,25,31)
+		b.TextColor3=k==n and Color3.new(1,1,1) or Color3.fromRGB(180,180,190)
+		Indicators[k].Visible=(k==n)
+	end
+end
+
+for n,b in pairs(Buttons) do
+	b.Activated:Connect(function()
+		Show(n)
+	end)
+end
+
+local MiniButton=Instance.new("TextButton")
+MiniButton.Size=UDim2.fromOffset(55,55)
+MiniButton.Position=UDim2.new(0,15,.5,-27)
+MiniButton.Text="P"
+MiniButton.TextSize=22
+MiniButton.Font=Enum.Font.GothamBold
+MiniButton.TextColor3=Color3.new(1,1,1)
+MiniButton.BackgroundColor3=Color3.fromRGB(30,30,38)
+MiniButton.Visible=false
+MiniButton.Parent=GUI
+Instance.new("UICorner",MiniButton).CornerRadius=UDim.new(1,0)
+
+Mini.Activated:Connect(function()
+	Main.Visible=false
+	MiniButton.Visible=true
+end)
+
+MiniButton.Activated:Connect(function()
+	Main.Visible=true
+	MiniButton.Visible=false
+end)
+
+Close.Activated:Connect(function()
+	StopNoClip()
+
+	if JumpConn then
+		JumpConn:Disconnect()
+		JumpConn=nil
+	end
+
+	for p in pairs(ESP) do
+		RemoveESP(p)
+	end
+
+	for p in pairs(Names) do
+		RemoveName(p)
+	end
+
+	ClearNPC()
+	GUI:Destroy()
+end)
+
+local DragTop=false
+local DragStart
+local StartPos
+
+Top.InputBegan:Connect(function(i)
+	if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+		DragTop=true
+		DragStart=i.Position
+		StartPos=Main.Position
+	end
+end)
+
+UIS.InputChanged:Connect(function(i)
+	if DragTop and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then
+		local d=i.Position-DragStart
+
+		Main.Position=UDim2.new(
+			StartPos.X.Scale,
+			StartPos.X.Offset+d.X,
+			StartPos.Y.Scale,
+			StartPos.Y.Offset+d.Y
+		)
+	end
+end)
+
+UIS.InputEnded:Connect(function(i)
+	if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+		DragTop=false
+	end
+end)
+
+LP.CharacterAdded:Connect(function()
+	task.wait(.5)
+
+	if NoclipOn then
+		StartNoClip()
+	end
+
+	local h=Hum()
+
+	if h then
+		h.WalkSpeed=SpeedOn and Speed or 16
+		h.UseJumpPower=true
+		h.JumpPower=JumpOn and 70 or 50
+	end
+
+	for _,p in ipairs(P:GetPlayers()) do
+		if p~=LP then
+			if ESPOn then AddESP(p) end
+			if NamesOn then AddName(p) end
+		end
+	end
+end)
+
+P.PlayerAdded:Connect(function(p)
+	p.CharacterAdded:Connect(function()
+		task.wait(.5)
+
+		if ESPOn then
+			AddESP(p)
+		end
+
+		if NamesOn then
+			AddName(p)
+		end
+	end)
+end)
+
+P.PlayerRemoving:Connect(function(p)
+	RemoveESP(p)
+	RemoveName(p)
+end)
+
+Show("Home")
